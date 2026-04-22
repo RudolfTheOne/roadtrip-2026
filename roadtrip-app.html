@@ -891,9 +891,13 @@ const C = {california:'#38bdf8',la:'#fb923c',desert:'#fbbf24',nm:'#c084fc',nyc:'
 
 const STOPS = [
   {id:'sfo',day:0,name:'SFO — Przylot',lat:37.6213,lng:-122.379,type:'✈️',region:'california',
+   note:'Lądowanie 20:15. Imigracja 2–2,5h (non-US passport — Secondary Inspection prawie pewne).\nShuttle: Departure Level, center island "hotel courtesy shuttle", ostatni o 22:15.\nJeśli nie zdążymy: Uber ~$18, 7 min.',
+   next:'bwg',nextDrive:'shuttle ~7 min'},
+
+  {id:'bwg',day:0,name:'Best Western Plus Grosvenor',lat:37.6077,lng:-122.385,type:'🏨',region:'california',
    overnight:true,booked:true,hotel:'Best Western Plus Grosvenor',
-   note:'Lądowanie 20:15. Imigracja 2–2,5h (non-US). Shuttle z Departure Level, center island.\nAuto odbieramy rano następnego dnia.',
-   next:'gg_bridge',nextDrive:'rano: hotel shuttle → SFO → National'},
+   note:'Nocleg przy lotnisku. Auto odbieramy rano — hotel shuttle z powrotem do SFO.',
+   next:'gg_bridge',nextDrive:'rano: hotel shuttle → SFO → National Car Rental'},
 
   {id:'gg_bridge',day:1,name:'Golden Gate Bridge',lat:37.8324,lng:-122.4795,type:'📸',region:'california',
    note:'Vista Point od strony Marin. Spacer mostem. Kurtki — wiatr i mgła!',
@@ -918,7 +922,12 @@ const STOPS = [
 
   {id:'mariposa_grove',day:2,name:'Mariposa Grove — Sekwoje',lat:37.5014,lng:-119.6098,type:'🌲',region:'california',
    note:'Shuttle co 15 min (ostatni powrót 20:00). Grizzly Giant Loop ~3 km, 2h. Gigantyczne sekwoje!\n🎯 Ogromny zapas czasu — spokojne tempo.',
-   next:'mariposa',nextDrive:'45 min / ~55 km (Hwy 41 S → Hwy 140 W)'},
+   next:'mariposa_n2',nextDrive:'45 min / ~55 km (Hwy 41 S → Hwy 140 W)'},
+
+  {id:'mariposa_n2',day:2,name:'Miners Inn — nocleg (2. noc)',lat:37.4849,lng:-119.9663,type:'🏨',region:'california',
+   overnight:true,booked:true,hotel:'Miners Inn',
+   note:'Zasłużony odpoczynek po epickiej Yosemite. Jutro: Sacramento → County Fair.',
+   next:'sacramento',nextDrive:'~3h / ~240 km (Hwy 140 → Hwy 49 → Hwy 99)'},
 
   {id:'sacramento',day:3,name:'Sacramento — County Fair',lat:38.5816,lng:-121.4944,type:'🎪',region:'california',
    overnight:true,booked:true,hotel:'Courtyard by Marriott Cal Expo',
@@ -946,26 +955,48 @@ const STOPS = [
    note:'7770 Rosecrans Ave. Podwójny seans ~$14/os. Wziąć koce!',
    next:'la_hotel',nextDrive:'~20 min'},
 
-  {id:'la_hotel',day:5,name:'LA — nocleg (2 noce)',lat:34.0522,lng:-118.2437,type:'🏨',region:'la',
+  {id:'la_hotel',day:5,name:'LA — nocleg (1. noc)',lat:34.0522,lng:-118.2437,type:'🏨',region:'la',
    overnight:true,booked:false,
-   note:'Rejon Paramount / Downey / Hollywood. 2 noce (25–27 maja).',
+   note:'Rejon Paramount / Downey / Hollywood.',
    next:'universal',nextDrive:'30 min / ~20 km'},
 
   {id:'universal',day:6,name:'Universal Studios Hollywood',lat:34.1381,lng:-118.3534,type:'🎢',region:'la',
    note:'Dzień po Memorial Day = tłumy -40–50%. Realnie wszystko w <7h.',
+   next:'la_hotel_n2',nextDrive:'30 min / ~20 km'},
+
+  {id:'la_hotel_n2',day:6,name:'LA — nocleg (2. noc)',lat:34.0522,lng:-118.2437,type:'🏨',region:'la',
+   overnight:true,booked:false,
+   note:'Ten sam hotel co poprzednia noc. Jutro: wyjazd do Calico i Zion.',
    next:'calico',nextDrive:'2h / ~170 km (I-15 N przez San Bernardino)'},
 
   {id:'calico',day:7,name:'Calico Ghost Town',lat:34.9495,lng:-116.8677,type:'🏚️',region:'desert',
    note:'1h. Podziemna kopalnia + Main St. ~$10/os.',
-   next:'springdale',nextDrive:'4h / ~330 km (I-15 N → Virgin River Gorge)'},
+   next:'angels_lottery',nextDrive:'w drodze — sprawdź lottery podczas postoju/lunchu'},
 
-  {id:'springdale',day:7,name:'Hurricane / Springdale — nocleg',lat:37.0456,lng:-113.2887,type:'🏨',region:'desert',
+  {id:'angels_lottery',day:7,name:'Angels Landing — sprawdź lottery!',lat:37.2698,lng:-112.9479,type:'🎲',region:'desert',
+   note:'⏰ DEADLINE DZIŚ do 15:00!\nZaloguj się na recreation.gov i aplikuj o permit na Angels Landing.\nJeśli wygrasz → jutro: Narrows rano, Angels Landing zamiast Canyon Overlook.\nAngels Landing: 7,2 km RT, łańcuchy na finałowym odcinku — epickie!',
+   next:'springdale',nextDrive:'kontynuuj → Springdale (Virgin River Gorge po drodze)'},
+
+  {id:'springdale',day:7,name:'Hurricane / Springdale — nocleg (1. noc)',lat:37.0456,lng:-113.2887,type:'🏨',region:'desert',
    overnight:true,booked:true,hotel:'My Place Hotel — Hurricane, UT',
-   note:'Hotel 20 min jazdy od wejścia Zion. Kolacja w Springdale: Oscar\'s Cafe lub King\'s Landing.',
-   next:'zion',nextDrive:'25 min / ~20 km (do Visitor Center Zion)'},
+   note:'Hotel 20 min jazdy od wejścia Zion. Kolacja w Springdale: Oscar\'s Cafe lub King\'s Landing.\n🎲 Lottery: wyniki sprawdź online wieczorem.',
+   next:'zion_narrows',nextDrive:'25 min / ~20 km (do Visitor Center Zion)'},
 
-  {id:'zion',day:8,name:'Zion NP — The Narrows',lat:37.2982,lng:-112.9479,type:'🏞️',region:'desert',
-   note:'6:00 pobudka! 7:00 pierwszy shuttle z Visitor Center — klucz do uniknięcia tłumów.\nThe Narrows: brodzenie 3–5 km w Virgin River między 300m ścianami. Neopreny z wypożyczalni (~$25/os).\n⚠️ Sprawdź CFS dzień wcześniej: nps.gov/zion. >150 CFS = zamknięte!\nPlan B: Observation Point via East Mesa.\n\nPopołudnie: Canyon Overlook Trail (1,6 km, panorama) — przy tunelu, bez shuttle.\n💡 Opcja: Angels Landing lottery (recreation.gov, deadline 3 PM dzień wcześniej).',
+  {id:'zion_shuttle',day:8,name:'Zion — pobudka & shuttle',lat:37.1983,lng:-112.9878,type:'🚌',region:'desert',
+   note:'⏰ 6:00 pobudka!\n7:00 pierwszy shuttle z Visitor Center — absolutny klucz do uniknięcia tłumów w kanionie.\nNeopreny na Narrows: wypożycz w Springdale poprzedniego wieczoru lub rano przed shutt (~$25/os).',
+   next:'zion_narrows',nextDrive:'shuttle ~15 min do Temple of Sinawava'},
+
+  {id:'zion_narrows',day:8,name:'The Narrows — brodzenie',lat:37.2982,lng:-112.9479,type:'🏞️',region:'desert',
+   note:'Brodzenie 3–5 km w Virgin River między 300m ścianami. Zaczynaj rano — powrót ~11:30–12:00.\n⚠️ Sprawdź CFS dzień wcześniej: nps.gov/zion. Jeśli >150 = zamknięte!\nPlan B: Observation Point via East Mesa albo Emerald Pools.\n🍽️ Lunch po powrocie w Springdale.',
+   next:'zion_overlook',nextDrive:'shuttle z powrotem + 30 min jazdy do tunelu'},
+
+  {id:'zion_overlook',day:8,name:'Canyon Overlook Trail',lat:37.2156,lng:-112.9445,type:'🏔️',region:'desert',
+   note:'1,6 km, ~45 min. Panoramiczny widok na kanion ze szczytu. Parking przy tunelu — nie wymaga shuttle!\n💡 Jeśli wygrałeś Angels Landing lottery → zamień to na Angels Landing (5,7 km RT).',
+   next:'springdale_n2',nextDrive:'20 min / ~15 km (do hotelu)'},
+
+  {id:'springdale_n2',day:8,name:'My Place Hotel — nocleg (2. noc)',lat:37.0456,lng:-113.2887,type:'🏨',region:'desert',
+   overnight:true,booked:true,hotel:'My Place Hotel — Hurricane, UT',
+   note:'Zasłużony odpoczynek. Jutro: wczesny wyjazd do Bryce Canyon.',
    next:'bryce',nextDrive:'1,5h / ~120 km (Hwy 89 N)'},
 
   {id:'bryce',day:9,name:'Bryce Canyon NP',lat:37.5930,lng:-112.1871,type:'🏜️',region:'desert',
