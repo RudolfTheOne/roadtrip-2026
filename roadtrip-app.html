@@ -3,6 +3,24 @@
 <head>
 <meta charset="utf-8">
 <title>Road Trip 2026</title>
+<script>
+(function(){try{
+  var c=document.createElement('canvas');c.width=c.height=512;
+  var x=c.getContext('2d');
+  var g=x.createLinearGradient(0,0,512,512);
+  g.addColorStop(0,'#1e3a8a');g.addColorStop(1,'#0f172a');
+  x.fillStyle=g;x.fillRect(0,0,512,512);
+  x.fillStyle='rgba(180,20,20,0.28)';
+  [0,72,144,216,288,360].forEach(function(y){x.fillRect(0,y,512,36);});
+  x.fillStyle='rgba(10,18,50,0.52)';x.fillRect(0,0,512,512);
+  x.font='260px serif';x.textAlign='center';x.textBaseline='middle';
+  x.fillText('🗺️',256,256);
+  var l=document.createElement('link');
+  l.rel='apple-touch-icon';l.sizes='180x180';
+  l.href=c.toDataURL('image/png');
+  document.head.appendChild(l);
+}catch(e){}})();
+</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -692,10 +710,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
   position:fixed;bottom:0;left:0;right:0;z-index:2000;
   display:flex;background:rgba(15,23,42,0.97);
   border-top:1px solid rgba(255,255,255,0.07);
-  padding-bottom:var(--safe-bot);
+  backdrop-filter:blur(12px);
 }
 #tabs button{
-  flex:1;padding:12px 0 10px;background:none;border:none;color:var(--text2);
+  flex:1;padding:13px 0;padding-bottom:calc(13px + var(--safe-bot));
+  background:none;border:none;color:var(--text2);
   font-size:11px;font-weight:600;letter-spacing:.3px;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;gap:3px;transition:color .15s;
 }
@@ -788,6 +807,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .stop-text span{font-size:11px;color:var(--text3)}
 .stop-check{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--bg3);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:3px;transition:all .15s}
 .stop-check.done{background:var(--ok);border-color:var(--ok)}
+.stop-time{display:inline-block;font-size:10px;font-weight:700;color:var(--text3);background:var(--bg3);padding:1px 5px;border-radius:4px;margin-right:4px;font-variant-numeric:tabular-nums;vertical-align:middle;letter-spacing:0}
 .tag-unbooked{font-size:10px;font-weight:700;color:var(--red);margin-left:4px}
 .tag-booked{font-size:10px;font-weight:700;color:var(--ok);margin-left:4px}
 .list-bottom-pad{height:72px}
@@ -890,52 +910,105 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 const C = {california:'#38bdf8',la:'#fb923c',desert:'#fbbf24',nm:'#c084fc',nyc:'#4ade80'};
 
 const STOPS = [
-  {id:'sfo',day:0,name:'SFO — Przylot',lat:37.6213,lng:-122.379,type:'✈️',region:'california',
+  // ─── DAY 0 ──────────────────────────────────────────────────────
+  {id:'sfo',day:0,name:'SFO — Przylot',lat:37.6213,lng:-122.379,type:'✈️',region:'california',time:'20:15',
    note:'Lądowanie 20:15. Imigracja 2–2,5h (non-US passport — Secondary Inspection prawie pewne).\nShuttle: Departure Level, center island "hotel courtesy shuttle", ostatni o 22:15.\nJeśli nie zdążymy: Uber ~$18, 7 min.',
    next:'bwg',nextDrive:'shuttle ~7 min'},
 
   {id:'bwg',day:0,name:'Best Western Plus Grosvenor',lat:37.6077,lng:-122.385,type:'🏨',region:'california',
    overnight:true,booked:true,hotel:'Best Western Plus Grosvenor',
    note:'Nocleg przy lotnisku. Auto odbieramy rano — hotel shuttle z powrotem do SFO.',
-   next:'gg_bridge',nextDrive:'rano: hotel shuttle → SFO → National Car Rental'},
+   next:'national_car',nextDrive:'rano: hotel shuttle → SFO'},
 
-  {id:'gg_bridge',day:1,name:'Golden Gate Bridge',lat:37.8324,lng:-122.4795,type:'📸',region:'california',
-   note:'Vista Point od strony Marin. Spacer mostem. Kurtki — wiatr i mgła!',
+  // ─── DAY 1 ──────────────────────────────────────────────────────
+  {id:'national_car',day:1,name:'National: odbiór SUV',lat:37.6192,lng:-122.383,type:'🚗',region:'california',time:'8:15',
+   note:'Rezerwacja na 8:30. National Car Rental, SFO. SUV na całą podróż do Phoenix.\n📋 Sprawdź stan auta przed odjazdem.',
+   next:'gg_bridge',nextDrive:'45 min / ~25 km (US-101 N)'},
+
+  {id:'gg_bridge',day:1,name:'Golden Gate Bridge',lat:37.8324,lng:-122.4795,type:'📸',region:'california',time:'9:15',
+   note:'Vista Point od strony Marin. Spacer mostem. 🧥 Kurtki — wiatr i mgła!',
    next:'chinatown',nextDrive:'25 min / ~12 km'},
 
-  {id:'chinatown',day:1,name:'Chinatown SF',lat:37.7941,lng:-122.4078,type:'🥟',region:'california',
-   note:'Dim sum — Good Mong Kok Bakery albo Hang Ah Tea Room.',
-   next:'mariposa',nextDrive:'~3,5h / ~280 km (Bay Bridge → I-580 → Hwy 120 → Hwy 49 → Hwy 140)'},
+  {id:'chinatown',day:1,name:'Chinatown SF',lat:37.7941,lng:-122.4078,type:'🥟',region:'california',time:'10:45',
+   note:'Dim sum — Good Mong Kok Bakery albo Hang Ah Tea Room. Najstarsze Chinatown w USA.',
+   next:'luggage_pickup',nextDrive:'15 min / wróć do hotelu'},
+
+  {id:'luggage_pickup',day:1,name:'Odbiór bagaży z hotelu',lat:37.6077,lng:-122.385,type:'🧳',region:'california',time:'12:00',
+   note:'Wróć do Best Western Grosvenor po bagaże pozostawione do przechowania.\nPotem: wyjazd do Mariposa przez Bay Bridge → I-580 → Hwy 120 → Hwy 49 → Hwy 140.',
+   next:'mariposa',nextDrive:'~3,5h / ~280 km'},
 
   {id:'mariposa',day:1,name:'Mariposa — nocleg',lat:37.4849,lng:-119.9663,type:'🏨',region:'california',
-   overnight:true,booked:true,hotel:'Miners Inn',
-   note:'Kolacja w miasteczku. Baza do Yosemite.',
-   next:'vernal_fall',nextDrive:'1h 15 min / ~75 km (Hwy 140 E do Yosemite Valley)'},
+   overnight:true,booked:true,hotel:'Miners Inn',time:'19:00',
+   note:'Kolacja w miasteczku. Baza wypadowa do Yosemite.',
+   next:'mariposa_depart',nextDrive:'jutro 6:30 — wczesny wyjazd!'},
 
-  {id:'vernal_fall',day:2,name:'Mist Trail — Vernal Fall',lat:37.7295,lng:-119.5553,type:'💧',region:'california',
-   note:'Parking przy Curry Village 7:45. Mist Trail 4 km RT, 300m przewyższenia. EPICKIE — ostatnie 300m przez ścianę rozpylonej wody!\n🧥 Kurtki p/deszczowe obowiązkowe. Suche rzeczy zostają w bagażniku.\nPo powrocie: Southside Dr → El Capitan Meadow (krótki postój) → Bridalveil Fall (20 min) → Tunnel View (15 min).',
-   next:'glacier_point',nextDrive:'55 min / ~35 km (Bridalveil → Glacier Point Rd)'},
+  // ─── DAY 2 ──────────────────────────────────────────────────────
+  {id:'mariposa_depart',day:2,name:'⏰ Wyjazd do Yosemite!',lat:37.4849,lng:-119.9663,type:'🚗',region:'california',time:'6:30',
+   note:'WCZESNY WYJAZD 6:30 — żeby dotrzeć na Mist Trail przed tłumami!\nHwy 140 E, ~1h 15 min do Curry Village.',
+   next:'vernal_fall',nextDrive:'1h 15 min / ~75 km (Hwy 140 E)'},
 
-  {id:'glacier_point',day:2,name:'Glacier Point + Washburn Point',lat:37.7302,lng:-119.5737,type:'🏔️',region:'california',
-   note:'Washburn Point: widok na Nevada Fall z góry (parking po drodze).\nGlacier Point: Half Dome na wysokości oczu — jeden z najlepszych widoków w USA. 1h.',
+  {id:'vernal_fall',day:2,name:'Mist Trail — Vernal Fall',lat:37.7295,lng:-119.5553,type:'💧',region:'california',time:'8:00',
+   note:'Parking przy Curry Village 7:45. Mist Trail 4 km RT, 300m przewyższenia (~3h z przerwami).\nEPICKIE — ostatnie 300m przez ścianę rozpylonej wody po stromych granitowych schodach!\n🧥 Kurtki p/deszczowe obowiązkowe. Suche rzeczy w bagażniku.\nPo powrocie: przebranie przy aucie. Potem przez El Capitan Meadow.',
+   next:'bridalveil',nextDrive:'20 min / ~15 km (Southside Dr → El Capitan Meadow po drodze)'},
+
+  {id:'bridalveil',day:2,name:'Bridalveil Fall',lat:37.7163,lng:-119.6489,type:'💧',region:'california',time:'12:25',
+   note:'Szybki spacer do wodospadu, ~20 min. Poczujesz chłód nawet z odległości!',
+   next:'tunnel_view',nextDrive:'5 min / ~3 km'},
+
+  {id:'tunnel_view',day:2,name:'Tunnel View',lat:37.7178,lng:-119.6785,type:'📸',region:'california',time:'12:50',
+   note:'Pocztówkowy widok na całą dolinę. El Capitan po lewej, Bridalveil Fall po prawej, Half Dome w tle. ~15 min.',
+   next:'glacier_drive',nextDrive:'55 min / ~30 km (Glacier Point Rd)'},
+
+  {id:'glacier_drive',day:2,name:'Przejazd → Glacier Point',lat:37.7250,lng:-119.6200,type:'🚗',region:'california',time:'13:05',
+   note:'Przejazd Yosemite Valley → Glacier Point Rd (~55 min). Kręta górska droga z widokami.',
+   next:'washburn_point',nextDrive:'dojeżdżasz na parking'},
+
+  {id:'washburn_point',day:2,name:'Washburn Point',lat:37.7265,lng:-119.5785,type:'📸',region:'california',time:'14:00',
+   note:'Widok na Nevada Fall i Half Dome z góry. Parking po prawej tuż przed Glacier Point. ~15 min.',
+   next:'glacier_point',nextDrive:'5 min / ~2 km'},
+
+  {id:'glacier_point',day:2,name:'Glacier Point',lat:37.7302,lng:-119.5737,type:'🏔️',region:'california',time:'14:15',
+   note:'Half Dome na wysokości oczu — jeden z najpiękniejszych widoków w USA. ~1h.',
    next:'mariposa_grove',nextDrive:'1h / ~55 km (Glacier Point Rd → Hwy 41 S)'},
 
-  {id:'mariposa_grove',day:2,name:'Mariposa Grove — Sekwoje',lat:37.5014,lng:-119.6098,type:'🌲',region:'california',
-   note:'Shuttle co 15 min (ostatni powrót 20:00). Grizzly Giant Loop ~3 km, 2h. Gigantyczne sekwoje!\n🎯 Ogromny zapas czasu — spokojne tempo.',
+  {id:'mariposa_grove',day:2,name:'Mariposa Grove — Sekwoje',lat:37.5014,lng:-119.6098,type:'🌲',region:'california',time:'16:15',
+   note:'Shuttle co 15 min (ostatni powrót 20:00). Grizzly Giant Loop ~3 km, ~2h.',
    next:'mariposa_n2',nextDrive:'45 min / ~55 km (Hwy 41 S → Hwy 140 W)'},
 
   {id:'mariposa_n2',day:2,name:'Miners Inn — nocleg (2. noc)',lat:37.4849,lng:-119.9663,type:'🏨',region:'california',
-   overnight:true,booked:true,hotel:'Miners Inn',
+   overnight:true,booked:true,hotel:'Miners Inn',time:'19:00',
    note:'Zasłużony odpoczynek po epickiej Yosemite. Jutro: Sacramento → County Fair.',
-   next:'sacramento',nextDrive:'~3h / ~240 km (Hwy 140 → Hwy 49 → Hwy 99)'},
+   next:'golden_corral',nextDrive:'~3h / ~240 km (Hwy 140 → Hwy 49 → Hwy 99)'},
 
-  {id:'sacramento',day:3,name:'Sacramento — County Fair',lat:38.5816,lng:-121.4944,type:'🎪',region:'california',
-   overnight:true,booked:true,hotel:'Courtyard by Marriott Cal Expo',
-   note:'County Fair 16:00–21:30. Corn dogs, funnel cake, deep-fried Oreos, arena show!',
-   next:'sequoia',nextDrive:'~3,5h / ~280 km (Hwy 99 → Hwy 180 przez Fresno)'},
+  // ─── DAY 3 ──────────────────────────────────────────────────────
+  {id:'golden_corral',day:3,name:'Golden Corral / lokalny diner',lat:38.5562,lng:-121.4068,type:'🍽️',region:'california',time:'11:30',
+   note:'Lunch po drodze do Sacramento. Golden Corral lub lokalny diner.',
+   next:'sacramento_checkin',nextDrive:'10 min / ~8 km'},
 
-  {id:'sequoia',day:4,name:'Sequoia NP',lat:36.5842,lng:-118.7522,type:'🌳',region:'california',
-   note:'General Sherman Tree + Moro Rock (360°!) + Tunnel Log.\n⚠️ Dzień przed Memorial Day — wejdź na Moro Rock przed 10:00!',
+  {id:'sacramento_checkin',day:3,name:'Sacramento — check-in hotel',lat:38.5816,lng:-121.4944,type:'🏨',region:'california',
+   overnight:true,booked:true,hotel:'Courtyard by Marriott Cal Expo',time:'13:30',
+   note:'Check-in przy Cal Expo. Rzuć bagaże i jedź na Fair!',
+   next:'county_fair',nextDrive:'5 min / ~3 km do Cal Expo'},
+
+  {id:'county_fair',day:3,name:'Sacramento County Fair',lat:38.5780,lng:-121.4167,type:'🎪',region:'california',time:'16:00',
+   note:'Sacramento County Fair 16:00–21:30.\nZwierzęta, petting zoo, karnawał, fair food (corn dogs, funnel cake, deep-fried Oreos).\nWieczorem arena show — sacfair.com',
+   next:'sacramento_checkin',nextDrive:'5 min / ~3 km do hotelu'},
+
+  // ─── DAY 4 ──────────────────────────────────────────────────────
+  {id:'rocsol',day:4,name:'ROC&SOL Diner — śniadanie',lat:38.5820,lng:-121.4958,type:'🥞',region:'california',time:'8:00',
+   note:'Śniadanie w ROC&SOL Diner, 10th St, Sacramento.',
+   next:'sherman_tree',nextDrive:'~4h / ~300 km (Hwy 99 → Hwy 180 przez Fresno)'},
+
+  {id:'sherman_tree',day:4,name:'General Sherman Tree',lat:36.5876,lng:-118.7472,type:'🌲',region:'california',time:'12:30',
+   note:'Największe drzewo na Ziemi! 0,8 km spacer, ~45 min. Waga: 1385 ton, wysokość: 84m.',
+   next:'moro_rock',nextDrive:'10 min / ~8 km'},
+
+  {id:'moro_rock',day:4,name:'Moro Rock',lat:36.5453,lng:-118.7652,type:'⛰️',region:'california',time:'13:30',
+   note:'350 schodów na granitową kopułę. Widok 360° na Great Western Divide!\n⚠️ Dzień przed Memorial Day — wejdź przed 14:00.',
+   next:'tunnel_log',nextDrive:'10 min / ~5 km'},
+
+  {id:'tunnel_log',day:4,name:'Tunnel Log',lat:36.5434,lng:-118.7684,type:'📸',region:'california',time:'14:30',
+   note:'Jedź autem przez pień sekwoi! ~5 min, zdjęcie obowiązkowe.\n(SUV zmieści się — otwór 2,6m × 5,1m)',
    next:'visalia',nextDrive:'1h / ~55 km (Generals Hwy → Hwy 198)'},
 
   {id:'visalia',day:4,name:'Visalia — nocleg',lat:36.3302,lng:-119.2921,type:'🏨',region:'california',
@@ -943,15 +1016,16 @@ const STOPS = [
    note:'Baza przed skokiem do LA.',
    next:'santa_monica',nextDrive:'~5h / ~350 km (Hwy 99 → I-5)\n⚠️ Memorial Day — licz 6–7h!'},
 
-  {id:'santa_monica',day:5,name:'Santa Monica + Venice Beach',lat:34.0195,lng:-118.4912,type:'🏖️',region:'la',
+  // ─── DAY 5 ──────────────────────────────────────────────────────
+  {id:'santa_monica',day:5,name:'Santa Monica + Venice Beach',lat:34.0195,lng:-118.4912,type:'🏖️',region:'la',time:'11:00',
    note:'Pier, kolejka, uliczni artyści, Muscle Beach. Klasyczna Americana w święto.\n⚠️ Tłumy Memorial Day — normalne.',
    next:'griffith',nextDrive:'30 min / ~18 km'},
 
-  {id:'griffith',day:5,name:'Griffith Observatory',lat:34.1184,lng:-118.3004,type:'🔭',region:'la',
-   note:'Sunset nad LA + planetarium. Darmowe! DASH Observatory shuttle lub lower lot parking.',
+  {id:'griffith',day:5,name:'Griffith Observatory',lat:34.1184,lng:-118.3004,type:'🔭',region:'la',time:'16:00',
+   note:'Sunset nad LA + planetarium. Darmowe! DASH Observatory shuttle lub lower lot parking.\nHollywood Sign z Lake Hollywood Park.',
    next:'paramount_di',nextDrive:'30 min / ~25 km'},
 
-  {id:'paramount_di',day:5,name:'Paramount Drive-In Theatres',lat:33.8917,lng:-118.1597,type:'🎬',region:'la',
+  {id:'paramount_di',day:5,name:'Paramount Drive-In Theatres',lat:33.8917,lng:-118.1597,type:'🎬',region:'la',time:'20:30',
    note:'7770 Rosecrans Ave. Podwójny seans ~$14/os. Wziąć koce!',
    next:'la_hotel',nextDrive:'~20 min'},
 
@@ -960,133 +1034,187 @@ const STOPS = [
    note:'Rejon Paramount / Downey / Hollywood.',
    next:'universal',nextDrive:'30 min / ~20 km'},
 
-  {id:'universal',day:6,name:'Universal Studios Hollywood',lat:34.1381,lng:-118.3534,type:'🎢',region:'la',
+  // ─── DAY 6 ──────────────────────────────────────────────────────
+  {id:'universal',day:6,name:'Universal Studios Hollywood',lat:34.1381,lng:-118.3534,type:'🎢',region:'la',time:'9:30',
    note:'Dzień po Memorial Day = tłumy -40–50%. Realnie wszystko w <7h.',
    next:'la_hotel_n2',nextDrive:'30 min / ~20 km'},
 
   {id:'la_hotel_n2',day:6,name:'LA — nocleg (2. noc)',lat:34.0522,lng:-118.2437,type:'🏨',region:'la',
    overnight:true,booked:false,
-   note:'Ten sam hotel co poprzednia noc. Jutro: wyjazd do Calico i Zion.',
-   next:'calico',nextDrive:'2h / ~170 km (I-15 N przez San Bernardino)'},
+   note:'Ten sam hotel. Jutro: wyjazd do Pasadeny i Calico.',
+   next:'pasadena',nextDrive:'30 min / ~25 km (I-210 W)'},
 
-  {id:'calico',day:7,name:'Calico Ghost Town',lat:34.9495,lng:-116.8677,type:'🏚️',region:'desert',
-   note:'1h. Podziemna kopalnia + Main St. ~$10/os.',
+  // ─── DAY 7 ──────────────────────────────────────────────────────
+  {id:'pasadena',day:7,name:'Pasadena City Hall',lat:34.1478,lng:-118.1445,type:'📸',region:'la',time:'8:20',
+   note:'Parks & Recreation — ikoniczny budynek z serialu! Szybka fotka, ~15 min.\n100 N Garfield Ave, Pasadena.',
+   next:'calico',nextDrive:'2h / ~160 km (I-210 E → I-15 N)'},
+
+  {id:'calico',day:7,name:'Calico Ghost Town',lat:34.9495,lng:-116.8677,type:'🏚️',region:'desert',time:'10:00',
+   note:'~1h. Podziemna kopalnia + Main St. ~$10/os.',
    next:'angels_lottery',nextDrive:'w drodze — sprawdź lottery podczas postoju/lunchu'},
 
-  {id:'angels_lottery',day:7,name:'Angels Landing — sprawdź lottery!',lat:37.2698,lng:-112.9479,type:'🎲',region:'desert',
-   note:'⏰ DEADLINE DZIŚ do 15:00!\nZaloguj się na recreation.gov i aplikuj o permit na Angels Landing.\nJeśli wygrasz → jutro: Narrows rano, Angels Landing zamiast Canyon Overlook.\nAngels Landing: 7,2 km RT, łańcuchy na finałowym odcinku — epickie!',
+  {id:'angels_lottery',day:7,name:'Angels Landing — sprawdź lottery!',lat:37.2698,lng:-112.9479,type:'🎲',region:'desert',time:'12:00',
+   note:'⏰ DEADLINE DZIŚ do 15:00!\nZaloguj się na recreation.gov i aplikuj o permit na Angels Landing.\nJeśli wygrasz → jutro: Narrows rano, Angels Landing zamiast Canyon Overlook.',
    next:'springdale',nextDrive:'kontynuuj → Springdale (Virgin River Gorge po drodze)'},
 
   {id:'springdale',day:7,name:'Hurricane / Springdale — nocleg (1. noc)',lat:37.0456,lng:-113.2887,type:'🏨',region:'desert',
-   overnight:true,booked:true,hotel:'My Place Hotel — Hurricane, UT',
-   note:'Hotel 20 min jazdy od wejścia Zion. Kolacja w Springdale: Oscar\'s Cafe lub King\'s Landing.\n🎲 Lottery: wyniki sprawdź online wieczorem.',
-   next:'zion_narrows',nextDrive:'25 min / ~20 km (do Visitor Center Zion)'},
+   overnight:true,booked:true,hotel:'My Place Hotel — Hurricane, UT',time:'16:00',
+   note:'Hotel 20 min od wejścia Zion. Kolacja: Oscar\'s Cafe lub King\'s Landing.\n🎲 Wyniki lottery sprawdź online wieczorem.',
+   next:'zion_shuttle',nextDrive:'25 min / ~20 km (do Visitor Center Zion)'},
 
-  {id:'zion_shuttle',day:8,name:'Zion — pobudka & shuttle',lat:37.1983,lng:-112.9878,type:'🚌',region:'desert',
-   note:'⏰ 6:00 pobudka!\n7:00 pierwszy shuttle z Visitor Center — absolutny klucz do uniknięcia tłumów w kanionie.\nNeopreny na Narrows: wypożycz w Springdale poprzedniego wieczoru lub rano przed shutt (~$25/os).',
+  // ─── DAY 8 ──────────────────────────────────────────────────────
+  {id:'zion_shuttle',day:8,name:'Zion — pobudka & shuttle',lat:37.1983,lng:-112.9878,type:'🚌',region:'desert',time:'6:00',
+   note:'⏰ 6:00 pobudka!\n7:00 pierwszy shuttle z Visitor Center — klucz do uniknięcia tłumów.\nNeopreny: wypożycz poprzedniego wieczoru lub rano (~$25/os).',
    next:'zion_narrows',nextDrive:'shuttle ~15 min do Temple of Sinawava'},
 
-  {id:'zion_narrows',day:8,name:'The Narrows — brodzenie',lat:37.2982,lng:-112.9479,type:'🏞️',region:'desert',
-   note:'Brodzenie 3–5 km w Virgin River między 300m ścianami. Zaczynaj rano — powrót ~11:30–12:00.\n⚠️ Sprawdź CFS dzień wcześniej: nps.gov/zion. Jeśli >150 = zamknięte!\nPlan B: Observation Point via East Mesa albo Emerald Pools.\n🍽️ Lunch po powrocie w Springdale.',
-   next:'zion_overlook',nextDrive:'shuttle z powrotem + 30 min jazdy do tunelu'},
+  {id:'zion_narrows',day:8,name:'The Narrows — brodzenie',lat:37.2982,lng:-112.9479,type:'🏞️',region:'desert',time:'7:30',
+   note:'Brodzenie 3–5 km w Virgin River między 300m ścianami. Powrót ~11:30–12:00.\n⚠️ Sprawdź CFS dzień wcześniej: nps.gov/zion. >150 CFS = zamknięte!\nPlan B: Observation Point via East Mesa albo Emerald Pools.\n🍽️ Lunch po powrocie w Springdale.',
+   next:'zion_overlook',nextDrive:'shuttle powrót + 30 min jazdy do tunelu'},
 
-  {id:'zion_overlook',day:8,name:'Canyon Overlook Trail',lat:37.2156,lng:-112.9445,type:'🏔️',region:'desert',
-   note:'1,6 km, ~45 min. Panoramiczny widok na kanion ze szczytu. Parking przy tunelu — nie wymaga shuttle!\n💡 Jeśli wygrałeś Angels Landing lottery → zamień to na Angels Landing (5,7 km RT).',
-   next:'springdale_n2',nextDrive:'20 min / ~15 km (do hotelu)'},
+  {id:'zion_overlook',day:8,name:'Canyon Overlook Trail',lat:37.2156,lng:-112.9445,type:'🏔️',region:'desert',time:'14:00',
+   note:'1,6 km, ~45 min. Panoramiczny widok na kanion. Parking przy tunelu — bez shuttle!\n💡 Jeśli wygrałeś Angels Landing lottery → zamień na Angels Landing (5,7 km RT).',
+   next:'springdale_n2',nextDrive:'20 min / ~15 km do hotelu'},
 
   {id:'springdale_n2',day:8,name:'My Place Hotel — nocleg (2. noc)',lat:37.0456,lng:-113.2887,type:'🏨',region:'desert',
    overnight:true,booked:true,hotel:'My Place Hotel — Hurricane, UT',
    note:'Zasłużony odpoczynek. Jutro: wczesny wyjazd do Bryce Canyon.',
    next:'bryce',nextDrive:'1,5h / ~120 km (Hwy 89 N)'},
 
-  {id:'bryce',day:9,name:'Bryce Canyon NP',lat:37.5930,lng:-112.1871,type:'🏜️',region:'desert',
+  // ─── DAY 9 ──────────────────────────────────────────────────────
+  {id:'bryce',day:9,name:'Bryce Canyon NP',lat:37.5930,lng:-112.1871,type:'🏜️',region:'desert',time:'9:00',
    note:'Navajo Loop + Queen\'s Garden. 2,5h. Hoodoos = inna planeta. Chłodny poranek.',
-   next:'moab',nextDrive:'5h / ~310 km (UT-12 sceniczna → Capitol Reef → I-70)\nHogback Ridge, Head of the Rocks Overlook'},
+   next:'moab',nextDrive:'5h / ~310 km (UT-12 sceniczna → Capitol Reef → I-70)\nHogback Ridge, Head of the Rocks Overlook, San Rafael Swell'},
 
   {id:'moab',day:9,name:'Moab — nocleg',lat:38.5733,lng:-109.5498,type:'🏨',region:'desert',
-   overnight:true,booked:true,hotel:'Rustic Inn',
+   overnight:true,booked:true,hotel:'Rustic Inn',time:'18:00',
    note:'Kolacja: Moab Brewery albo Milt\'s Stop & Eat.',
-   next:'arches',nextDrive:'10 min / ~8 km'},
+   next:'delicate_arch',nextDrive:'20 min / ~18 km'},
 
-  {id:'arches',day:10,name:'Arches NP',lat:38.7331,lng:-109.5925,type:'🏜️',region:'desert',
-   note:'Park Avenue → Delicate Arch (5km RT, must-do!) → Windows Section → Landscape Arch.\n✅ Brak timed entry w 2026!',
-   next:'dead_horse',nextDrive:'20 min / ~18 km'},
+  // ─── DAY 10 ──────────────────────────────────────────────────────
+  {id:'delicate_arch',day:10,name:'Delicate Arch',lat:38.7331,lng:-109.5218,type:'🏜️',region:'desert',time:'6:30',
+   note:'Ikoniczny łuk Arches NP! 5 km RT, ~2,5–3h. Must-do absolut.\nWjazd do parku przed 7:00 = bez timed entry!',
+   next:'landscape_arch',nextDrive:'15 min / ~10 km (Devil\'s Garden)'},
 
-  {id:'dead_horse',day:10,name:'Dead Horse Point SP',lat:38.4833,lng:-109.7333,type:'🌅',region:'desert',
-   note:'Sunset ~18:30. Gooseneck Kolorado 600m w dół. $20/auto.',
+  {id:'landscape_arch',day:10,name:'Landscape Arch',lat:38.7912,lng:-109.6064,type:'🏜️',region:'desert',time:'10:00',
+   note:'Najdłuższy naturalny łuk na świecie (88m)! 2,5 km RT, 45 min.',
+   next:'windows_section',nextDrive:'20 min / ~15 km'},
+
+  {id:'windows_section',day:10,name:'Windows Section & Double Arch',lat:38.6802,lng:-109.5373,type:'🏜️',region:'desert',time:'11:30',
+   note:'Double Arch, Turret Arch, North/South Window. ~1h.\n🧗 W Double Arch można się legalnie wspinać wewnątrz "katedry" skalnej!',
+   next:'park_avenue',nextDrive:'10 min / ~8 km'},
+
+  {id:'park_avenue',day:10,name:'Park Avenue Viewpoint',lat:38.6592,lng:-109.5744,type:'📸',region:'desert',time:'13:00',
+   note:'Skalne "wieżowce" Arches. Krótki przystanek na zdjęcia, ~30 min.',
+   next:'moab_siesta',nextDrive:'10 min / ~8 km do Moab'},
+
+  {id:'moab_siesta',day:10,name:'Sjesta w Moab',lat:38.5733,lng:-109.5498,type:'😴',region:'desert',time:'13:30',
+   note:'Lunch + odpoczynek (13:30–17:00). Uzupełnij wodę i energię przed Dead Horse Point.\nMoab Brewery, Milt\'s Stop & Eat, Eddie McStiff\'s.',
+   next:'dead_horse',nextDrive:'30 min / ~25 km (Hwy 313)'},
+
+  {id:'dead_horse',day:10,name:'Dead Horse Point — zachód słońca',lat:38.4833,lng:-109.7333,type:'🌅',region:'desert',time:'18:30',
+   note:'Gooseneck Kolorado 600m w dół — jeden z najpiękniejszych zachodów w USA!\nPrzyjdź wcześniej (17:00) żeby wybrać miejsce. $20/auto.',
    next:'bluff',nextDrive:'1,5h / ~120 km (US-191 S)'},
 
   {id:'bluff',day:10,name:'Bluff, UT — nocleg',lat:37.2808,lng:-109.5523,type:'🏨',region:'desert',
    overnight:true,booked:false,
-   note:'Desert Rose Resort lub Recapture Lodge — małe obiekty, rezerwuj szybko!',
+   note:'Desert Rose Resort lub Recapture Lodge — małe obiekty, rezerwuj z wyprzedzeniem!',
    next:'bisti',nextDrive:'2,5h / ~200 km (US-191 S → US-64 E)'},
 
-  {id:'bisti',day:11,name:'Bisti/De-Na-Zin Badlands',lat:36.75,lng:-108.1833,type:'👽',region:'desert',
-   note:'Marsjański krajobraz. Darmowe. 3–5 km. Chłód poranka!\n⚠️ Offline GPS + dużo wody.',
+  // ─── DAY 11 ──────────────────────────────────────────────────────
+  {id:'bisti',day:11,name:'Bisti/De-Na-Zin Badlands',lat:36.75,lng:-108.1833,type:'👽',region:'desert',time:'9:00',
+   note:'Surrealistyczny marsjański krajobraz. Darmowe. 3–5 km. Chłód poranka!\n⚠️ Offline GPS + dużo wody. Łatwo się tu zgubić!',
    next:'shiprock',nextDrive:'45 min / ~60 km'},
 
-  {id:'shiprock',day:11,name:'Shiprock',lat:36.7869,lng:-108.6884,type:'📸',region:'desert',
-   note:'Skała wulkaniczna 480m. Zdjęcia z pobocza US-491. 20 min.',
-   next:'monument_valley',nextDrive:'2,5h / ~200 km (US-64 W → US-163 N)\nPo drodze: Mexican Hat Rock, Forrest Gump Point'},
+  {id:'shiprock',day:11,name:'Shiprock',lat:36.7869,lng:-108.6884,type:'📸',region:'desert',time:'12:15',
+   note:'"Skrzydlata Skała" Navaho — 480m wulkaniczna iglica. Zdjęcia z pobocza US-491, ~20 min.',
+   next:'forrest_gump',nextDrive:'1,5h / ~120 km (US-64 W → US-163)'},
+
+  {id:'forrest_gump',day:11,name:'Forrest Gump Point',lat:37.1541,lng:-110.1375,type:'📸',region:'desert',time:'14:00',
+   note:'"Zatrzymałem się tu…" — mile marker 13 na US-163.\nTen kultowy widok: prosta droga, mesa po obu stronach, Monument Valley w horyzoncie. ~15 min.',
+   next:'monument_valley',nextDrive:'15 min / ~20 km'},
 
   {id:'monument_valley',day:11,name:'Monument Valley — nocleg',lat:36.9986,lng:-110.0988,type:'🏨',region:'desert',
-   overnight:true,booked:true,hotel:'Goulding\'s Lodge',
-   note:'Sunset 16:30–18:30 — Mittens w złotym świetle. $25/auto.\nRano: self-drive loop 17 km.',
+   overnight:true,booked:true,hotel:'Goulding\'s Lodge',time:'16:30',
+   note:'Sunset 16:30–18:30 — Mittens w złotym świetle. $25/auto.',
+   next:'mv_loop',nextDrive:'rano: wjazd do parku o 7:00'},
+
+  // ─── DAY 12 ──────────────────────────────────────────────────────
+  {id:'mv_loop',day:12,name:'Monument Valley — self-drive loop',lat:36.9986,lng:-110.0988,type:'🏜️',region:'desert',time:'7:00',
+   note:'17 km pętla własnym autem, ~2,5h. Teren szutrowy — SUV da radę!\nThe Mittens, Merrick Butte, John Ford\'s Point.',
    next:'antelope',nextDrive:'2h / ~160 km (US-163 S → US-160 W → US-98 N)'},
 
-  {id:'antelope',day:12,name:'Antelope Canyon X',lat:36.8619,lng:-111.3743,type:'🏜️',region:'desert',
+  {id:'antelope',day:12,name:'Antelope Canyon X',lat:36.8619,lng:-111.3743,type:'🏜️',region:'desert',time:'12:20',
    note:'Wejście TYLKO z przewodnikiem Navajo. ✅ Zarezerwowane (12:20–13:50).\nAntelope Canyon X — tańszy i mniej tłoczny niż Upper/Lower.',
    next:'horseshoe',nextDrive:'10 min / ~8 km'},
 
-  {id:'horseshoe',day:12,name:'Horseshoe Bend',lat:36.8792,lng:-111.51,type:'🌅',region:'desert',
-   note:'Sunset. Meander Colorado 300m w dół. Parking $10, 1,2 km spacer.',
+  {id:'horseshoe',day:12,name:'Horseshoe Bend',lat:36.8792,lng:-111.51,type:'🌅',region:'desert',time:'17:30',
+   note:'Meander Colorado 300m w dół — złote światło o zachodzie!\nParking $10, 1,2 km spacer.',
    next:'page_hotel',nextDrive:'10 min / ~8 km'},
 
   {id:'page_hotel',day:12,name:'Page, AZ — nocleg',lat:36.9147,lng:-111.4558,type:'🏨',region:'desert',
    overnight:true,booked:false,
-   note:'Nocleg w Page po długim dniu Antelope + Horseshoe.',
-   next:'gc_desert_view',nextDrive:'1,5h / ~100 km (US-89 S → Hwy 64 W)'},
+   note:'Nocleg w Page po długim dniu Antelope Canyon + Horseshoe Bend.',
+   next:'gc_watchtower',nextDrive:'1,5h / ~100 km (US-89 S → Hwy 64 W)'},
 
-  {id:'gc_desert_view',day:13,name:'Grand Canyon — Desert View',lat:36.042,lng:-111.8258,type:'🏛️',region:'desert',
-   note:'Watchtower Mary Colter + fresk Hopi. Lipan Point = jedyny widok na Colorado z rimu.',
-   next:'williams',nextDrive:'2h / ~130 km (Desert View Drive → Hwy 64 S → I-40 W)'},
+  // ─── DAY 13 ──────────────────────────────────────────────────────
+  {id:'gc_watchtower',day:13,name:'Desert View Watchtower',lat:36.042,lng:-111.8258,type:'🏛️',region:'desert',time:'10:30',
+   note:'Wieża Mary Colter z 1932r. Fresk Hopi wewnątrz. Widok na kanion i Colorado. ~25 min.',
+   next:'lipan_point',nextDrive:'10 min / ~8 km (Desert View Drive W)'},
+
+  {id:'lipan_point',day:13,name:'Lipan Point',lat:36.0507,lng:-111.8855,type:'📸',region:'desert',time:'11:10',
+   note:'Jedyny punkt na South Rim, gdzie widać rzekę Kolorado! ~15 min.\nPotem: Desert View Drive → Village → lunch w Bright Angel Lodge.',
+   next:'bearizona',nextDrive:'2h / ~115 km (Hwy 64 S → I-40 W → Williams)'},
+
+  {id:'bearizona',day:13,name:'Bearizona Wildlife Park',lat:35.2620,lng:-112.2031,type:'🐻',region:'desert',time:'14:45',
+   note:'Drive-thru wildlife park! Niedźwiedzie, wilki, bizony, rysie z własnego auta. $27/os, ~2h.\nPo parku: Williams Main St — Route 66.',
+   next:'williams',nextDrive:'10 min / ~5 km'},
 
   {id:'williams',day:13,name:'Williams, AZ — nocleg',lat:35.2497,lng:-112.1912,type:'🏨',region:'desert',
    overnight:true,booked:false,
-   note:'Bearizona drive-thru ($27/os) + Route 66 Main St + Pete\'s Gas Station Museum.\nGrand Canyon Railway Hotel dla klimatu.',
+   note:'Route 66. Grand Canyon Railway Hotel dla klimatu.\nKolacja: Cruiser\'s Route 66 albo Pine Country.',
+   next:'wild_west',nextDrive:'rano, dojście pieszo'},
+
+  // ─── DAY 14 ──────────────────────────────────────────────────────
+  {id:'wild_west',day:14,name:'Wild West Shootout',lat:35.2522,lng:-112.1940,type:'🤠',region:'desert',time:'9:00',
+   note:'Darmowa strzelanina z kowbojami przy Williams Depot! ~15 min.',
    next:'meteor',nextDrive:'1h 15 min / ~100 km (I-40 E)'},
 
-  {id:'meteor',day:14,name:'Meteor Crater',lat:35.0272,lng:-111.0225,type:'🌑',region:'desert',
-   note:'Krater 1,2 km średnicy, 170m głęboki. Muzeum + guided tour. ~$25/os.',
+  {id:'meteor',day:14,name:'Meteor Crater',lat:35.0272,lng:-111.0225,type:'🌑',region:'desert',time:'10:45',
+   note:'Krater 1,2 km średnicy, 170m głęboki. Muzeum + guided tour. ~$25/os, ~1,5h.',
    next:'winslow',nextDrive:'20 min / ~25 km (I-40 E)'},
 
-  {id:'winslow',day:14,name:'Winslow, AZ',lat:35.0242,lng:-110.6974,type:'🎸',region:'desert',
-   note:'"Standing on the Corner" — pomnik Eagles, mural. Lunch w La Posada Hotel.',
-   next:'socorro',nextDrive:'4,5h / ~360 km (Hwy 87 S → Hwy 60 E)'},
+  {id:'winslow',day:14,name:'Winslow — "Standing on the Corner"',lat:35.0242,lng:-110.6974,type:'🎸',region:'desert',time:'12:35',
+   note:'"Standing on a corner in Winslow, Arizona…" — pomnik Eagles, mural. ~20 min.\nLunch w La Posada Hotel.',
+   next:'socorro',nextDrive:'4,5h / ~360 km (Hwy 87 S → Hwy 180 S → Hwy 60 E)'},
 
   {id:'socorro',day:14,name:'Socorro, NM — nocleg',lat:34.0584,lng:-106.8914,type:'🏨',region:'nm',
    overnight:true,booked:false,
    note:'Green chile cheeseburger w Lotto Burger lub Sofia\'s Kitchen.\nHoliday Inn Express lub Best Western.',
    next:'vla',nextDrive:'1h / ~80 km (US-60 W)'},
 
-  {id:'vla',day:15,name:'Very Large Array (VLA)',lat:34.0784,lng:-107.6177,type:'📡',region:'nm',
-   note:'27 radioteleskopów na płaskowyżu. Visitor Center + self-guided tour. Darmowe.',
+  // ─── DAY 15 ──────────────────────────────────────────────────────
+  {id:'vla',day:15,name:'Very Large Array (VLA)',lat:34.0784,lng:-107.6177,type:'📡',region:'nm',time:'9:00',
+   note:'27 radioteleskopów na płaskowyżu. Visitor Center + self-guided tour. Sceny z \'Contact\' kręcono tu!',
    next:'salt_river',nextDrive:'3h / ~250 km (US-60 W przez AZ)'},
 
   {id:'salt_river',day:15,name:'Salt River Canyon',lat:33.84,lng:-110.5,type:'📸',region:'nm',
-   note:'"Mały Wielki Kanion". Scenic rest stop na US-60 — spektakularne serpentyny w czerwonej skale.',
+   note:'"Mały Wielki Kanion" — rest stop na US-60. Spektakularne serpentyny w czerwonej skale. ~20 min.',
    next:'phx',nextDrive:'2h / ~150 km (US-60 W → Phoenix)'},
 
-  {id:'phx',day:15,name:'Phoenix PHX — Lot do NYC',lat:33.4373,lng:-112.0078,type:'✈️',region:'nm',
-   note:'Desert Botanical Garden lub Culinary Dropout w Scottsdale.\nZwrot National 21:00.\n✈️ 23:58 PHX → JFK (JetBlue, ~5h).',
-   next:'nyc',nextDrive:'✈️ Lot ~5h'},
+  {id:'phx',day:15,name:'Phoenix / Scottsdale — czas wolny',lat:33.4942,lng:-111.9261,type:'🌵',region:'nm',time:'16:00',
+   note:'Desert Botanical Garden — gigantyczne kaktusy saguaro.\nPożegnalna kolacja: Culinary Dropout w Scottsdale.',
+   next:'phx_car_return',nextDrive:'15 min / ~10 km na lotnisko PHX'},
 
+  {id:'phx_car_return',day:15,name:'Zwrot SUV — National PHX',lat:33.4373,lng:-112.0078,type:'🚗',region:'nm',time:'21:30',
+   note:'Zwrot auta National Car Rental, PHX. Shuttle do terminalu.\n✈️ 23:58 PHX → JFK (JetBlue, bezpośredni, ~5h lotu redeye).',
+   next:'nyc',nextDrive:'✈️ Lot ~5h redeye'},
+
+  // ─── NYC ──────────────────────────────────────────────────────────
   {id:'nyc',day:16,name:'Nowy Jork — Manhattan',lat:40.7128,lng:-74.006,type:'🗽',region:'nyc',
-   overnight:true,booked:true,hotel:'Hotel Manhattan (pod 39)',
-   note:'5 dni NYC (5–10 czerwca):\nHigh Line, Times Square, Staten Island Ferry, Financial District, DUMBO, Brooklyn Bridge, Intrepid Museum, SPYSCAPE, Top of the Rock (rezerwacja sunset!), AMNH, Central Park, Morgan Library, MET, Grand Central.',
+   overnight:true,booked:true,hotel:'Hotel Manhattan',
+   note:'5 dni NYC (5–10 czerwca):\nHigh Line, Times Square, Staten Island Ferry, Financial District, DUMBO, Brooklyn Bridge, Intrepid, SPYSCAPE, Top of the Rock, AMNH, Central Park, MET, Grand Central.',
    next:null,nextDrive:null},
 ];
-
 const DAYS = [
   {id:0,date:'Śr 20 maja',title:'Przylot SFO',dH:0,dKm:0,color:'#38bdf8'},
   {id:1,date:'Czw 21 maja',title:'SF → Mariposa',dH:4.5,dKm:310,color:'#38bdf8'},
@@ -1294,7 +1422,7 @@ function buildList(){
       row.innerHTML=`
         <div class="stop-icon" style="background:${C[s.region]}22">${s.type}</div>
         <div class="stop-text">
-          <strong>${s.name}${tag}</strong>
+          <strong>${s.time?`<span class="stop-time">${s.time}</span> `:''}${s.name}${tag}</strong>
           <span>${hotelLabel}</span>
         </div>
         <div class="stop-check${vis?' done':''}">
