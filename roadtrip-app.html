@@ -7,18 +7,55 @@
 (function(){try{
   var c=document.createElement('canvas');c.width=c.height=512;
   var x=c.getContext('2d');
-  var g=x.createLinearGradient(0,0,512,512);
-  g.addColorStop(0,'#1e3a8a');g.addColorStop(1,'#0f172a');
-  x.fillStyle=g;x.fillRect(0,0,512,512);
-  x.fillStyle='rgba(180,20,20,0.28)';
-  [0,72,144,216,288,360].forEach(function(y){x.fillRect(0,y,512,36);});
-  x.fillStyle='rgba(10,18,50,0.52)';x.fillRect(0,0,512,512);
-  x.font='260px serif';x.textAlign='center';x.textBaseline='middle';
-  x.fillText('🗺️',256,256);
-  var l=document.createElement('link');
-  l.rel='apple-touch-icon';l.sizes='180x180';
-  l.href=c.toDataURL('image/png');
-  document.head.appendChild(l);
+  function rr(cx,cx2,cy,cw,ch,cr){cx2.beginPath();cx2.moveTo(cx+cr,cy);cx2.lineTo(cx+cw-cr,cy);cx2.arcTo(cx+cw,cy,cx+cw,cy+cr,cr);cx2.lineTo(cx+cw,cy+ch-cr);cx2.arcTo(cx+cw,cy+ch,cx+cw-cr,cy+ch,cr);cx2.lineTo(cx+cr,cy+ch);cx2.arcTo(cx,cy+ch,cx,cy+ch-cr,cr);cx2.lineTo(cx,cy+cr);cx2.arcTo(cx,cy,cx+cr,cy,cr);cx2.closePath();}
+  function shield(cx,sx,sy,sw,sh){cx.beginPath();cx.moveTo(sx+sw*.09,sy);cx.lineTo(sx+sw*.91,sy);cx.arcTo(sx+sw,sy,sx+sw,sy+sh*.18,sw*.09);cx.lineTo(sx+sw,sy+sh*.65);cx.lineTo(sx+sw/2,sy+sh);cx.lineTo(sx,sy+sh*.65);cx.lineTo(sx,sy+sh*.18);cx.arcTo(sx,sy,sx+sw*.09,sy,sw*.09);cx.closePath();}
+  // Sky gradient bg
+  rr(0,x,0,512,512,90);x.clip();
+  var g=x.createLinearGradient(0,0,0,512);g.addColorStop(0,'#1255a0');g.addColorStop(.5,'#3d8fd4');g.addColorStop(1,'#5eaae8');x.fillStyle=g;x.fillRect(0,0,512,512);
+  // Flag stripes (upper area)
+  var sh=140/7;
+  for(var i=0;i<7;i++){x.fillStyle=i%2===0?'#b22234':'#f5f5f5';x.fillRect(0,i*sh,512,sh);}
+  // Blue canton
+  x.fillStyle='#3c3b6e';x.fillRect(0,0,212,4.5*sh);
+  // Stars
+  x.fillStyle='white';
+  for(var r=0;r<5;r++){var n=r%2===0?6:5,ox=r%2===0?14:32;for(var s=0;s<n;s++){x.beginPath();x.arc(ox+s*33,9+r*sh*.9,4,0,Math.PI*2);x.fill();}}
+  // Darken flag top
+  var ov=x.createLinearGradient(0,0,0,140);ov.addColorStop(0,'rgba(0,0,20,.45)');ov.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=ov;x.fillRect(0,0,512,140);
+  // Mesa silhouettes
+  x.fillStyle='#a84510';
+  x.beginPath();x.moveTo(270,512);x.lineTo(275,390);x.lineTo(310,300);x.lineTo(335,230);x.lineTo(348,200);x.lineTo(362,240);x.lineTo(385,340);x.lineTo(420,270);x.lineTo(445,195);x.lineTo(468,230);x.lineTo(512,330);x.lineTo(512,512);x.closePath();x.fill();
+  x.fillStyle='rgba(60,15,0,.35)';
+  x.beginPath();x.moveTo(335,512);x.lineTo(335,340);x.lineTo(362,340);x.lineTo(362,512);x.closePath();x.fill();
+  // Road
+  x.fillStyle='#222';x.beginPath();x.moveTo(140,512);x.quadraticCurveTo(190,475,230,420);x.lineTo(258,384);x.lineTo(286,420);x.quadraticCurveTo(326,475,370,512);x.closePath();x.fill();
+  x.strokeStyle='#f59e0b';x.lineWidth=7;x.setLineDash([24,14]);x.beginPath();x.moveTo(259,512);x.quadraticCurveTo(258,455,257,385);x.stroke();x.setLineDash([]);
+  // Lady Liberty silhouette
+  x.fillStyle='#2d8a52';
+  x.beginPath();x.moveTo(30,512);x.lineTo(44,295);x.quadraticCurveTo(50,275,62,265);x.lineTo(66,218);x.lineTo(72,218);x.lineTo(74,265);x.quadraticCurveTo(84,275,88,295);x.lineTo(100,512);x.closePath();x.fill();
+  x.beginPath();x.arc(69,202,16,0,Math.PI*2);x.fill();
+  // Crown
+  for(var i=-2;i<=2;i++){x.beginPath();x.moveTo(69+i*12,192);x.lineTo(69+i*9,172+Math.abs(i)*3);x.lineTo(69+(i-1)*12+12,192);x.fill();}
+  // Torch
+  x.beginPath();x.moveTo(79,230);x.lineTo(108,178);x.lineTo(112,178);x.lineTo(84,230);x.fill();
+  x.fillStyle='#fbbf24';x.beginPath();x.ellipse(110,170,5,10,-.3,0,Math.PI*2);x.fill();
+  // Route 66 Shield
+  var sx=152,sy=248,sw=208,sh2=218;
+  // Shadow
+  x.fillStyle='rgba(0,0,0,.4)';shield(x,sx+5,sy+5,sw,sh2);x.fill();
+  // White fill
+  x.fillStyle='#fff';shield(x,sx,sy,sw,sh2);x.fill();
+  // Black border thick
+  x.strokeStyle='#111';x.lineWidth=15;shield(x,sx,sy,sw,sh2);x.stroke();
+  // Inner border
+  x.lineWidth=5;shield(x,sx+18,sy+18,sw-36,sh2-26);x.stroke();
+  // Black header band
+  x.fillStyle='#111';x.fillRect(sx+18,sy+18,sw-36,52);
+  // ROUTE text
+  x.fillStyle='#fff';x.font='bold 34px Arial Black,Arial,sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText('ROUTE',sx+sw/2,sy+44);
+  // 66 text
+  x.fillStyle='#111';x.font='bold 112px Arial Black,Arial,sans-serif';x.fillText('66',sx+sw/2,sy+152);
+  var l=document.createElement('link');l.rel='apple-touch-icon';l.sizes='180x180';l.href=c.toDataURL('image/png');document.head.appendChild(l);
 }catch(e){}})();
 </script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -708,12 +745,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 /* ── TABS ── */
 #tabs{
   position:fixed;bottom:0;left:0;right:0;z-index:2000;
-  display:flex;background:rgba(15,23,42,0.97);
+  display:flex;align-items:flex-start;
+  background:rgba(15,23,42,0.97);
   border-top:1px solid rgba(255,255,255,0.07);
   backdrop-filter:blur(12px);
+  padding-bottom:var(--safe-bot);
 }
 #tabs button{
-  flex:1;padding:13px 0;padding-bottom:calc(13px + var(--safe-bot));
+  flex:1;padding:12px 0 10px;
   background:none;border:none;color:var(--text2);
   font-size:11px;font-weight:600;letter-spacing:.3px;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;gap:3px;transition:color .15s;
@@ -807,7 +846,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .stop-text span{font-size:11px;color:var(--text3)}
 .stop-check{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--bg3);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:3px;transition:all .15s}
 .stop-check.done{background:var(--ok);border-color:var(--ok)}
-.stop-time{display:inline-block;font-size:10px;font-weight:700;color:var(--text3);background:var(--bg3);padding:1px 5px;border-radius:4px;margin-right:4px;font-variant-numeric:tabular-nums;vertical-align:middle;letter-spacing:0}
+.stop-time{display:inline-block;font-size:11px;font-weight:700;color:#93c5fd;background:rgba(59,130,246,0.18);border:1px solid rgba(96,165,250,0.3);padding:1px 6px;border-radius:5px;margin-right:5px;font-variant-numeric:tabular-nums;vertical-align:middle;letter-spacing:.3px}
 .tag-unbooked{font-size:10px;font-weight:700;color:var(--red);margin-left:4px}
 .tag-booked{font-size:10px;font-weight:700;color:var(--ok);margin-left:4px}
 .list-bottom-pad{height:72px}
@@ -938,7 +977,7 @@ const STOPS = [
    next:'mariposa',nextDrive:'~3,5h / ~280 km'},
 
   {id:'mariposa',day:1,name:'Mariposa — nocleg',lat:37.4849,lng:-119.9663,type:'🏨',region:'california',
-   overnight:true,booked:true,hotel:'Miners Inn',time:'19:00',
+   overnight:true,booked:true,hotel:'Miners Inn',
    note:'Kolacja w miasteczku. Baza wypadowa do Yosemite.',
    next:'mariposa_depart',nextDrive:'jutro 6:30 — wczesny wyjazd!'},
 
@@ -957,11 +996,7 @@ const STOPS = [
 
   {id:'tunnel_view',day:2,name:'Tunnel View',lat:37.7178,lng:-119.6785,type:'📸',region:'california',time:'12:50',
    note:'Pocztówkowy widok na całą dolinę. El Capitan po lewej, Bridalveil Fall po prawej, Half Dome w tle. ~15 min.',
-   next:'glacier_drive',nextDrive:'55 min / ~30 km (Glacier Point Rd)'},
-
-  {id:'glacier_drive',day:2,name:'Przejazd → Glacier Point',lat:37.7250,lng:-119.6200,type:'🚗',region:'california',time:'13:05',
-   note:'Przejazd Yosemite Valley → Glacier Point Rd (~55 min). Kręta górska droga z widokami.',
-   next:'washburn_point',nextDrive:'dojeżdżasz na parking'},
+   next:'washburn_point',nextDrive:'55 min / ~30 km (Glacier Point Rd — kręta droga górska)'},
 
   {id:'washburn_point',day:2,name:'Washburn Point',lat:37.7265,lng:-119.5785,type:'📸',region:'california',time:'14:00',
    note:'Widok na Nevada Fall i Half Dome z góry. Parking po prawej tuż przed Glacier Point. ~15 min.',
@@ -976,7 +1011,7 @@ const STOPS = [
    next:'mariposa_n2',nextDrive:'45 min / ~55 km (Hwy 41 S → Hwy 140 W)'},
 
   {id:'mariposa_n2',day:2,name:'Miners Inn — nocleg (2. noc)',lat:37.4849,lng:-119.9663,type:'🏨',region:'california',
-   overnight:true,booked:true,hotel:'Miners Inn',time:'19:00',
+   overnight:true,booked:true,hotel:'Miners Inn',
    note:'Zasłużony odpoczynek po epickiej Yosemite. Jutro: Sacramento → County Fair.',
    next:'golden_corral',nextDrive:'~3h / ~240 km (Hwy 140 → Hwy 49 → Hwy 99)'},
 
@@ -986,13 +1021,18 @@ const STOPS = [
    next:'sacramento_checkin',nextDrive:'10 min / ~8 km'},
 
   {id:'sacramento_checkin',day:3,name:'Sacramento — check-in hotel',lat:38.5816,lng:-121.4944,type:'🏨',region:'california',
-   overnight:true,booked:true,hotel:'Courtyard by Marriott Cal Expo',time:'13:30',
-   note:'Check-in przy Cal Expo. Rzuć bagaże i jedź na Fair!',
+   time:'13:30',
+   note:'Check-in przy Courtyard by Marriott Cal Expo (13:30). Rzuć bagaże i jedź na Fair!',
    next:'county_fair',nextDrive:'5 min / ~3 km do Cal Expo'},
 
   {id:'county_fair',day:3,name:'Sacramento County Fair',lat:38.5780,lng:-121.4167,type:'🎪',region:'california',time:'16:00',
    note:'Sacramento County Fair 16:00–21:30.\nZwierzęta, petting zoo, karnawał, fair food (corn dogs, funnel cake, deep-fried Oreos).\nWieczorem arena show — sacfair.com',
-   next:'sacramento_checkin',nextDrive:'5 min / ~3 km do hotelu'},
+   next:'sacramento_hotel',nextDrive:'5 min / ~3 km do hotelu'},
+
+  {id:'sacramento_hotel',day:3,name:'Courtyard by Marriott — nocleg',lat:38.5816,lng:-121.4944,type:'🏨',region:'california',
+   overnight:true,booked:true,hotel:'Courtyard by Marriott Cal Expo',
+   note:'Jutro: wyjazd do Sequoia. śniadanie w ROC&SOL Diner.',
+   next:'rocsol',nextDrive:'lokalna trasa → ROC&SOL Diner'},
 
   // ─── DAY 4 ──────────────────────────────────────────────────────
   {id:'rocsol',day:4,name:'ROC&SOL Diner — śniadanie',lat:38.5820,lng:-121.4958,type:'🥞',region:'california',time:'8:00',
@@ -1058,7 +1098,7 @@ const STOPS = [
    next:'springdale',nextDrive:'kontynuuj → Springdale (Virgin River Gorge po drodze)'},
 
   {id:'springdale',day:7,name:'Hurricane / Springdale — nocleg (1. noc)',lat:37.0456,lng:-113.2887,type:'🏨',region:'desert',
-   overnight:true,booked:true,hotel:'My Place Hotel — Hurricane, UT',time:'16:00',
+   overnight:true,booked:true,hotel:'My Place Hotel — Hurricane, UT',
    note:'Hotel 20 min od wejścia Zion. Kolacja: Oscar\'s Cafe lub King\'s Landing.\n🎲 Wyniki lottery sprawdź online wieczorem.',
    next:'zion_shuttle',nextDrive:'25 min / ~20 km (do Visitor Center Zion)'},
 
@@ -1086,7 +1126,7 @@ const STOPS = [
    next:'moab',nextDrive:'5h / ~310 km (UT-12 sceniczna → Capitol Reef → I-70)\nHogback Ridge, Head of the Rocks Overlook, San Rafael Swell'},
 
   {id:'moab',day:9,name:'Moab — nocleg',lat:38.5733,lng:-109.5498,type:'🏨',region:'desert',
-   overnight:true,booked:true,hotel:'Rustic Inn',time:'18:00',
+   overnight:true,booked:true,hotel:'Rustic Inn',
    note:'Kolacja: Moab Brewery albo Milt\'s Stop & Eat.',
    next:'delicate_arch',nextDrive:'20 min / ~18 km'},
 
@@ -1134,7 +1174,7 @@ const STOPS = [
    next:'monument_valley',nextDrive:'15 min / ~20 km'},
 
   {id:'monument_valley',day:11,name:'Monument Valley — nocleg',lat:36.9986,lng:-110.0988,type:'🏨',region:'desert',
-   overnight:true,booked:true,hotel:'Goulding\'s Lodge',time:'16:30',
+   overnight:true,booked:true,hotel:'Goulding\'s Lodge',
    note:'Sunset 16:30–18:30 — Mittens w złotym świetle. $25/auto.',
    next:'mv_loop',nextDrive:'rano: wjazd do parku o 7:00'},
 
@@ -1197,7 +1237,7 @@ const STOPS = [
    note:'27 radioteleskopów na płaskowyżu. Visitor Center + self-guided tour. Sceny z \'Contact\' kręcono tu!',
    next:'salt_river',nextDrive:'3h / ~250 km (US-60 W przez AZ)'},
 
-  {id:'salt_river',day:15,name:'Salt River Canyon',lat:33.84,lng:-110.5,type:'📸',region:'nm',
+  {id:'salt_river',day:15,name:'Salt River Canyon',lat:33.84,lng:-110.5,type:'📸',region:'nm',time:'14:00',
    note:'"Mały Wielki Kanion" — rest stop na US-60. Spektakularne serpentyny w czerwonej skale. ~20 min.',
    next:'phx',nextDrive:'2h / ~150 km (US-60 W → Phoenix)'},
 
